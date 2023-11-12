@@ -1,8 +1,12 @@
 import express, { NextFunction, Request, Response } from 'express';
 import logger from './config/logger';
 import { HttpError } from 'http-errors';
+import 'reflect-metadata';
 
+import authRouter from './router/auth';
 const app = express();
+
+app.use('/auth', authRouter);
 
 app.get('/', (req, res) => {
     res.status(200).send('Welcome to Auth Service 1');
