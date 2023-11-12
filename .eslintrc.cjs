@@ -13,6 +13,7 @@ module.exports = {
     },
     root: true,
     rules: {
+        '@typescript-eslint/no-misused-promises': 'off',
         'no-console': 'warn',
     },
 };
