@@ -3,7 +3,7 @@ import request from 'supertest';
 import { User } from '../../entity/User';
 import { DataSource } from 'typeorm';
 import { AppDataSource } from '../../config/data-source';
-import { truncateTables } from '../utils';
+import { Roles } from '../../constants/intex';
 
 describe('POST auth/register', () => {
     let connection: DataSource;
@@ -14,7 +14,8 @@ describe('POST auth/register', () => {
 
     beforeEach(async () => {
         // Database truncate
-        await truncateTables(connection);
+        await connection.dropDatabase();
+        await connection.synchronize();
     });
 
     afterAll(async () => {
@@ -73,6 +74,44 @@ describe('POST auth/register', () => {
             expect(users[0].firstName).toBe(userData.firstName);
             expect(users[0].lastName).toBe(userData.lastName);
             expect(users[0].email).toBe(userData.email);
+        });
+
+        // To check if Id for the user is generated
+        it('should persist user in database with id', async () => {
+            // Arrange
+            const userData = {
+                email: 'anassain13@gmail.com',
+                password: '12345678',
+                firstName: 'Anas',
+                lastName: 'Sain',
+            };
+            // Act
+            const response: { body: { id: number } } = await request(app)
+                .post('/auth/register')
+                .send(userData);
+            // Assert
+
+            expect(response.body).toHaveProperty('id');
+            expect(response.body.id).toBeDefined();
+        });
+
+        it('should assign a customer role to the user', async () => {
+            // Arrange
+            const userData = {
+                email: 'anassain13@gmail.com',
+                password: '12345678',
+                firstName: 'Anas',
+                lastName: 'Sain',
+            };
+            // Act
+            await request(app).post('/auth/register').send(userData);
+
+            // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            expect(users[0]).toHaveProperty('role');
+            expect(users[0].role).toBe(Roles.CUSTOMER);
         });
     });
 });
