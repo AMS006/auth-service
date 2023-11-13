@@ -4,7 +4,6 @@ import { User } from '../entity/User';
 import { UserData } from '../types';
 import createHttpError from 'http-errors';
 import { Roles } from '../constants/intex';
-import logger from '../config/logger';
 
 export class UserService {
     constructor(private userRepository: Repository<User>) {}
@@ -34,7 +33,6 @@ export class UserService {
                 role: Roles.CUSTOMER,
             });
         } catch (error) {
-            logger.error('Some error', error);
             const err = createHttpError(
                 500,
                 'Failed to store data in database'
