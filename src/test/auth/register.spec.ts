@@ -76,7 +76,6 @@ describe('POST auth/register', () => {
             expect(users[0].email).toBe(userData.email);
         });
 
-        // To check if Id for the user is generated
         it('should persist user in database with id', async () => {
             // Arrange
             const userData = {
@@ -112,6 +111,45 @@ describe('POST auth/register', () => {
 
             expect(users[0]).toHaveProperty('role');
             expect(users[0].role).toBe(Roles.CUSTOMER);
+        });
+
+        it('should store hash password in database', async () => {
+            // Arrange
+            const userData = {
+                email: 'anassain13@gmail.com',
+                password: '12345678',
+                firstName: 'Anas',
+                lastName: 'Sain',
+            };
+            // Act
+            await request(app).post('/auth/register').send(userData);
+
+            // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            expect(users[0].password).not.toBe(userData.password);
+            expect(users[0].password).toHaveLength(60);
+            expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
+        });
+
+        it('should return 400 status code if email already exists', async () => {
+            // Arrange
+            const userData = {
+                email: 'anassain13@gmail.com',
+                password: '12345678',
+                firstName: 'Anas',
+                lastName: 'Sain',
+            };
+            const userRepository = connection.getRepository(User);
+            await userRepository.save({ ...userData, role: Roles.CUSTOMER });
+
+            // Act
+            await request(app).post('/auth/register').send(userData);
+
+            // Assert
+            const user = await userRepository.find();
+            expect(user).toHaveLength(1);
         });
     });
 });

@@ -1,5 +1,5 @@
 import express from 'express';
-import { AuthController } from '../controller/auth';
+import { AuthController } from '../controller/authController';
 import { UserService } from '../services/userService';
 import { AppDataSource } from '../config/data-source';
 import { User } from '../entity/User';

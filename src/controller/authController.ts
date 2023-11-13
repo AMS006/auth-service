@@ -15,12 +15,6 @@ export class AuthController {
         next: NextFunction
     ) {
         const { firstName, lastName, email, password } = req.body;
-        this.logger.info('New request to register user', {
-            firstName,
-            lastName,
-            email,
-            password: '********',
-        });
 
         try {
             const user = await this.userService.create({
@@ -29,7 +23,7 @@ export class AuthController {
                 email,
                 password,
             });
-            this.logger.info('User has been created', { id: user.id });
+            // this.logger.info("User has been created", { id: user.id });
             res.status(201).json(user);
         } catch (error) {
             next(error);
