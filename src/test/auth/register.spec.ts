@@ -4,6 +4,7 @@ import { User } from '../../entity/User';
 import { DataSource } from 'typeorm';
 import { AppDataSource } from '../../config/data-source';
 import { Roles } from '../../constants/intex';
+import { isJWT } from '../utils';
 
 describe('POST auth/register', () => {
     let connection: DataSource;
@@ -151,6 +152,42 @@ describe('POST auth/register', () => {
             const user = await userRepository.find();
             expect(user).toHaveLength(1);
         });
+
+        it('should return access token in cookie', async () => {
+            // Arrange
+            const userData = {
+                email: 'anassain13@gmail.com',
+                password: '12345678',
+                firstName: 'Anas',
+                lastName: 'Sain',
+            };
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData);
+
+            interface Headers {
+                [key: string]: string[];
+            }
+            // Assert
+            const cookies = (response.headers as Headers)['set-cookie'] || [];
+            let accessToken = null;
+            let refreshToken = null;
+            cookies.forEach((cookie) => {
+                if (cookie.startsWith('accessToken=')) {
+                    accessToken = cookie.split(';')[0].split('=')[1];
+                }
+                if (cookie.startsWith('refreshToken=')) {
+                    refreshToken = cookie.split(';')[0].split('=')[1];
+                }
+            });
+
+            expect(accessToken).not.toBeNull();
+            expect(refreshToken).not.toBeNull();
+
+            expect(isJWT(accessToken)).toBeTruthy();
+            expect(isJWT(refreshToken)).toBeTruthy();
+        });
     });
 
     describe('Given missing fields', () => {
@@ -175,7 +212,7 @@ describe('POST auth/register', () => {
             expect(users).toHaveLength(0);
         });
 
-        it('shoudl return 400 status code if password is missing', async () => {
+        it('should return 400 status code if password is missing', async () => {
             // Arrange
             const userData = {
                 email: 'anassain13@gmail.com',
