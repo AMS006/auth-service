@@ -1,17 +1,16 @@
-import fs from 'fs';
-import path from 'path';
-import { NextFunction, Response } from 'express';
-import { RegisterUserRequest } from '../types';
-import { UserService } from '../services/userService';
-import { validationResult } from 'express-validator';
-import { JwtPayload, sign } from 'jsonwebtoken';
-
 import { Logger } from 'winston';
-import { Config } from '../config';
+import { NextFunction, Response } from 'express';
+import { validationResult } from 'express-validator';
+import { JwtPayload } from 'jsonwebtoken';
+
+import { RegisterUserRequest } from '../types';
+import { UserService } from '../services/UserService';
+import { TokenService } from '../services/TokenService';
 
 export class AuthController {
     constructor(
         private userService: UserService,
+        private tokenService: TokenService,
         private logger: Logger
     ) {}
 
@@ -38,25 +37,20 @@ export class AuthController {
             });
             this.logger.info('User created successfully', { email });
 
-            const privateKey = fs.readFileSync(
-                path.join(__dirname, '../../certs/private.pem')
-            );
-
             const payload: JwtPayload = {
                 sub: String(user.id),
                 role: user.role,
             };
-            const accessToken = sign(payload, privateKey, {
-                algorithm: 'RS256',
-                expiresIn: '1h',
-                issuer: 'auth-service',
+
+            const newRefreshToken =
+                await this.tokenService.persistRefreshToken(user);
+
+            const refreshToken = this.tokenService.generateRefreshToken({
+                ...payload,
+                id: newRefreshToken.id,
             });
 
-            const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET!, {
-                algorithm: 'HS256',
-                expiresIn: '1y',
-                issuer: 'auth-service',
-            });
+            const accessToken = this.tokenService.generateAccessToken(payload);
 
             res.cookie('accessToken', accessToken, {
                 domain: 'localhost',

@@ -1,10 +1,11 @@
-import app from '../../app';
 import request from 'supertest';
-import { User } from '../../entity/User';
 import { DataSource } from 'typeorm';
-import { AppDataSource } from '../../config/data-source';
-import { Roles } from '../../constants/intex';
+import app from '../../app';
 import { isJWT } from '../utils';
+import { User } from '../../entity/User';
+import { Roles } from '../../constants/intex';
+import { AppDataSource } from '../../config/data-source';
+import { RefreshToken } from '../../entity/RefreshToken';
 
 describe('POST auth/register', () => {
     let connection: DataSource;
@@ -187,6 +188,32 @@ describe('POST auth/register', () => {
 
             expect(isJWT(accessToken)).toBeTruthy();
             expect(isJWT(refreshToken)).toBeTruthy();
+        });
+
+        it('should store refresh token in database', async () => {
+            // Arrange
+            const userData = {
+                email: 'anassain13@gmail.com',
+                password: '12345678',
+                firstName: 'Anas',
+                lastName: 'Sain',
+            };
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData);
+
+            // Assert
+            const refreshTokenRepository =
+                connection.getRepository(RefreshToken);
+
+            const tokens = await refreshTokenRepository
+                .createQueryBuilder('refreshToken')
+                .where('refreshToken.userId = :userId', {
+                    userId: (response.body as Record<string, string>).id,
+                })
+                .getMany();
+            expect(tokens).toHaveLength(1);
         });
     });
 
