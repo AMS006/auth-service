@@ -6,7 +6,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import { User } from '../entity/User';
 import { UserService } from '../services/UserService';
 import { TokenService } from '../services/TokenService';
-import { LoginUserRequest, RegisterUserRequest } from '../types';
+import { AuthRequest, LoginUserRequest, RegisterUserRequest } from '../types';
 
 export class AuthController {
     constructor(
@@ -124,5 +124,11 @@ export class AuthController {
             next(error);
             return;
         }
+    }
+
+    async self(req: AuthRequest, res: Response) {
+        const user = await this.userService.findById(Number(req.auth.sub));
+
+        res.json({ ...user, password: undefined });
     }
 }

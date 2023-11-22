@@ -1,12 +1,14 @@
 import express, { NextFunction, Request, Response } from 'express';
 import logger from './config/logger';
 import { HttpError } from 'http-errors';
+import cookieParser from 'cookie-parser';
 import 'reflect-metadata';
 
 import authRouter from './router/auth';
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/auth', authRouter);
 
@@ -18,7 +20,7 @@ app.get('/', (req, res) => {
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
     logger.error(err.message);
 
-    const statusCode = err.statusCode || 500;
+    const statusCode = err.statusCode || err.status || 500;
     return res.status(statusCode).json({
         errors: [
             {
