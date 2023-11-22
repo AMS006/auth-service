@@ -6,6 +6,7 @@ import { User } from '../../entity/User';
 import { Roles } from '../../constants/intex';
 import { AppDataSource } from '../../config/data-source';
 import { RefreshToken } from '../../entity/RefreshToken';
+import { Headers } from '../../types';
 
 describe('POST auth/register', () => {
     let connection: DataSource;
@@ -28,7 +29,7 @@ describe('POST auth/register', () => {
         it('should return 201', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -43,7 +44,7 @@ describe('POST auth/register', () => {
         it('should return valid json', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -61,7 +62,7 @@ describe('POST auth/register', () => {
         it('should persist user in database', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -81,7 +82,7 @@ describe('POST auth/register', () => {
         it('should persist user in database with id', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -99,7 +100,7 @@ describe('POST auth/register', () => {
         it('should assign a customer role to the user', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -118,7 +119,7 @@ describe('POST auth/register', () => {
         it('should store hash password in database', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -138,7 +139,7 @@ describe('POST auth/register', () => {
         it('should not add user if email already exists', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -154,10 +155,10 @@ describe('POST auth/register', () => {
             expect(user).toHaveLength(1);
         });
 
-        it('should return access token in cookie', async () => {
+        it('should return access and refresh token in cookie', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -167,9 +168,6 @@ describe('POST auth/register', () => {
                 .post('/auth/register')
                 .send(userData);
 
-            interface Headers {
-                [key: string]: string[];
-            }
             // Assert
             const cookies = (response.headers as Headers)['set-cookie'] || [];
             let accessToken = null;
@@ -193,7 +191,7 @@ describe('POST auth/register', () => {
         it('should store refresh token in database', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -242,7 +240,7 @@ describe('POST auth/register', () => {
         it('should return 400 status code if password is missing', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -263,7 +261,7 @@ describe('POST auth/register', () => {
         it('should return 400 status code if firstName is missing', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: '',
                 lastName: 'Sain',
@@ -285,7 +283,7 @@ describe('POST auth/register', () => {
         it('should return 400 status code if lastName is missing', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: '',
@@ -308,7 +306,7 @@ describe('POST auth/register', () => {
         it('should trim the email field', async () => {
             // Arrange
             const userData = {
-                email: '  anassain13@gmail.com  ',
+                email: '  test@gmail.com  ',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
@@ -347,7 +345,7 @@ describe('POST auth/register', () => {
         it('should return 400 status code if password is less than 8 characters', async () => {
             // Arrange
             const userData = {
-                email: 'anassain13@gmail.com',
+                email: 'test@gmail.com',
                 password: '1234567',
                 firstName: 'Anas',
                 lastName: 'Sain',

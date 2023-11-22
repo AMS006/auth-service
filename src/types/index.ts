@@ -1,12 +1,23 @@
 import { Request } from 'express';
 
 export interface UserData {
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     email: string;
     password: string;
 }
 
+export interface Headers {
+    [key: string]: string[];
+}
+
 export interface RegisterUserRequest extends Request {
     body: UserData;
+}
+
+export interface LoginUserRequest extends Request {
+    body: {
+        email: string;
+        password: string;
+    };
 }

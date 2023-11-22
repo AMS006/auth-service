@@ -5,14 +5,21 @@ import { Config } from '../config';
 import { UserData } from '../types';
 import { RefreshToken } from '../entity/RefreshToken';
 import { Repository } from 'typeorm';
+import createHttpError from 'http-errors';
 
 export class TokenService {
-    constructor(private tokenRepository: Repository<RefreshToken>) {}
+    constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
 
     generateAccessToken(payload: JwtPayload) {
-        const privateKey = fs.readFileSync(
-            path.join(__dirname, '../../certs/private.pem')
-        );
+        let privateKey: Buffer;
+        try {
+            privateKey = fs.readFileSync(
+                path.join(__dirname, '../../certs/private.pem')
+            );
+        } catch (error) {
+            const err = createHttpError(500, 'Failed to read private key');
+            throw err;
+        }
         const accessToken = sign(payload, privateKey, {
             algorithm: 'RS256',
             expiresIn: '1h',
@@ -32,7 +39,7 @@ export class TokenService {
     }
 
     async persistRefreshToken(user: UserData) {
-        const newRefreshToken = await this.tokenRepository.save({
+        const newRefreshToken = await this.refreshTokenRepository.save({
             user,
             expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
         });
