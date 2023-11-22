@@ -4,7 +4,7 @@ import { validationResult } from 'express-validator';
 import { JwtPayload } from 'jsonwebtoken';
 
 import { User } from '../entity/User';
-import { UserService } from '../services/userService';
+import { UserService } from '../services/UserService';
 import { TokenService } from '../services/TokenService';
 import { LoginUserRequest, RegisterUserRequest } from '../types';
 

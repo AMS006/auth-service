@@ -6,8 +6,8 @@ import { User } from '../entity/User';
 import { RefreshToken } from '../entity/RefreshToken';
 import registerValidator from '../validators/register-validator';
 import loginValidator from '../validators/login-validator';
-import { AuthController } from '../controller/authController';
-import { UserService } from '../services/userService';
+import { AuthController } from '../controller/AuthController';
+import { UserService } from '../services/UserService';
 
 const router = express.Router();
 
