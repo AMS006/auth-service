@@ -119,7 +119,7 @@ export class AuthController {
                 httpOnly: true,
             });
 
-            return res.status(200).json({ id: user.id });
+            return res.status(200).json({ ...user, password: undefined });
         } catch (error) {
             next(error);
             return;
