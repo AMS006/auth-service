@@ -24,7 +24,13 @@ export interface LoginUserRequest extends Request {
 
 export interface AuthRequest extends Request {
     auth: {
+        id?: 'string';
         sub: string;
         role: string;
     };
+}
+
+export interface IRefreshTokenPayload {
+    id: string;
+    sub: string;
 }

@@ -7,6 +7,7 @@ import { User } from '../entity/User';
 import { UserService } from '../services/UserService';
 import { TokenService } from '../services/TokenService';
 import { AuthRequest, LoginUserRequest, RegisterUserRequest } from '../types';
+import createHttpError from 'http-errors';
 
 export class AuthController {
     constructor(
@@ -130,5 +131,51 @@ export class AuthController {
         const user = await this.userService.findById(Number(req.auth.sub));
 
         res.json({ ...user, password: undefined });
+    }
+
+    async refresh(req: AuthRequest, res: Response, next: NextFunction) {
+        try {
+            const payload: JwtPayload = {
+                sub: String(req.auth.sub),
+                role: req.auth.role,
+            };
+
+            const user = await this.userService.findById(Number(req.auth.sub));
+
+            if (!user) {
+                const err = createHttpError(400, 'User not found');
+                next(err);
+                return;
+            }
+            const newRefreshToken =
+                await this.tokenService.persistRefreshToken(user);
+
+            // Delete old refresh token
+            await this.tokenService.deleteRefreshToken(Number(req.auth.id));
+
+            const refreshToken = this.tokenService.generateRefreshToken({
+                ...payload,
+                id: newRefreshToken.id,
+            });
+
+            const accessToken = this.tokenService.generateAccessToken(payload);
+
+            res.cookie('accessToken', accessToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60, // 1h
+                httpOnly: true,
+            });
+            res.cookie('refreshToken', refreshToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60 * 24 * 365, // 1y
+                httpOnly: true,
+            });
+
+            return res.json({ id: user.id });
+        } catch (error) {
+            next(error);
+        }
     }
 }
