@@ -118,5 +118,13 @@ describe('GET /auth/self', () => {
                 (response.body as { password: string }).password
             ).toBeUndefined();
         });
+
+        it('should return 401 status code if token does not exists', async () => {
+            //Arrange
+            const response = await request(app).get('/auth/self').send();
+
+            //Assert
+            expect(response.statusCode).toBe(401);
+        });
     });
 });
