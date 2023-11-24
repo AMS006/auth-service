@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import 'reflect-metadata';
 
 import authRouter from './router/auth';
+import tenantRouter from './router/tenant';
 const app = express();
 
 app.use(express.json());
@@ -12,6 +13,7 @@ app.use(cookieParser());
 app.use(express.static('public'));
 
 app.use('/auth', authRouter);
+app.use('/tenants', tenantRouter);
 
 app.get('/', (req, res) => {
     res.status(200).send('Welcome to Auth Service 1');
