@@ -40,26 +40,22 @@ export class UserService {
         }
     }
 
-    async login({ email, password }: UserData) {
-        // Check if user exists
-        const user = await this.userRepository.findOne({
+    async findByEmailWithPassword(email: string) {
+        return await this.userRepository.findOne({
             where: { email },
+            select: [
+                'id',
+                'firstName',
+                'lastName',
+                'email',
+                'password',
+                'role',
+            ],
         });
+    }
 
-        if (!user) {
-            const err = createHttpError(400, 'Invalid email or password');
-            throw err;
-        }
-
-        // Check if password is correct
-        const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
-        if (!isPasswordCorrect) {
-            const err = createHttpError(400, 'Invalid email or password');
-            throw err;
-        }
-
-        return user;
+    async comparePassword(password: string, hashedPassword: string) {
+        return await bcrypt.compare(password, hashedPassword);
     }
 
     async findById(id: number) {

@@ -1,13 +1,12 @@
 import { Logger } from 'winston';
+import { JwtPayload } from 'jsonwebtoken';
+import createHttpError from 'http-errors';
 import { NextFunction, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { JwtPayload } from 'jsonwebtoken';
 
-import { User } from '../entity/User';
 import { UserService } from '../services/UserService';
 import { TokenService } from '../services/TokenService';
 import { AuthRequest, LoginUserRequest, RegisterUserRequest } from '../types';
-import createHttpError from 'http-errors';
 
 export class AuthController {
     constructor(
@@ -66,7 +65,7 @@ export class AuthController {
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1y
                 httpOnly: true,
             });
-            res.status(201).json({ id: user.id });
+            res.status(201).json(user);
         } catch (error) {
             next(error);
             return;
@@ -82,15 +81,25 @@ export class AuthController {
             return res.status(400).json({ errors: result.array() });
         }
 
+        this.logger.info('Login user request', { email });
         try {
-            this.logger.info('Login user request', { email });
+            const user = await this.userService.findByEmailWithPassword(email);
 
-            const user: User = await this.userService.login({
-                email,
+            if (!user) {
+                const err = createHttpError(400, 'Invalid email or password');
+                next(err);
+                return;
+            }
+            const passwordMatch = await this.userService.comparePassword(
                 password,
-            });
+                user.password
+            );
 
-            this.logger.info('User logged in successfully', { email });
+            if (!passwordMatch) {
+                const err = createHttpError(400, 'Invalid email or password');
+                next(err);
+                return;
+            }
 
             const payload: JwtPayload = {
                 sub: String(user.id),
@@ -119,6 +128,8 @@ export class AuthController {
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1y
                 httpOnly: true,
             });
+
+            this.logger.info('User logged in successfully', { email });
 
             return res.status(200).json({ ...user, password: undefined });
         } catch (error) {
