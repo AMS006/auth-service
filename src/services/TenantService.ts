@@ -21,4 +21,39 @@ export class TenantService {
             address,
         });
     }
+
+    async getAll() {
+        return await this.tenantRepository.find();
+    }
+
+    async getTenantById(id: number) {
+        return await this.tenantRepository.findOne({
+            where: { id },
+        });
+    }
+
+    async update(id: number, { name, address }: ITenant) {
+        const tenant = await this.tenantRepository.findOne({
+            where: { id },
+        });
+        if (!tenant) {
+            const err = createHttpError(404, 'Tenant not found');
+            throw err;
+        }
+        return await this.tenantRepository.update(id, {
+            name,
+            address,
+        });
+    }
+
+    async delete(id: number) {
+        const tenant = await this.tenantRepository.findOne({
+            where: { id },
+        });
+        if (!tenant) {
+            const err = createHttpError(404, 'Tenant not found');
+            throw err;
+        }
+        return await this.tenantRepository.delete(id);
+    }
 }
