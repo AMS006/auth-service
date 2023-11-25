@@ -6,6 +6,8 @@ import 'reflect-metadata';
 
 import authRouter from './router/auth';
 import tenantRouter from './router/tenant';
+import userRouter from './router/user';
+
 const app = express();
 
 app.use(express.json());
@@ -14,6 +16,7 @@ app.use(express.static('public'));
 
 app.use('/auth', authRouter);
 app.use('/tenants', tenantRouter);
+app.use('/users', userRouter);
 
 app.get('/', (req, res) => {
     res.status(200).send('Welcome to Auth Service 1');

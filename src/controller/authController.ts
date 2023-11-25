@@ -7,6 +7,7 @@ import { validationResult } from 'express-validator';
 import { UserService } from '../services/UserService';
 import { TokenService } from '../services/TokenService';
 import { AuthRequest, LoginUserRequest, RegisterUserRequest } from '../types';
+import { Roles } from '../constants/intex';
 
 export class AuthController {
     constructor(
@@ -35,6 +36,7 @@ export class AuthController {
                 lastName,
                 email,
                 password,
+                role: Roles.CUSTOMER,
             });
             this.logger.info('User created successfully', { email });
 
