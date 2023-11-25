@@ -44,3 +44,13 @@ export interface ITenant {
 export interface TenantCreateRequest extends Request {
     body: ITenant;
 }
+
+export interface UpdateUserData {
+    firstName: string;
+    lastName: string;
+    role: string;
+}
+
+export interface UpdateUserRequest extends Request {
+    body: UpdateUserData;
+}

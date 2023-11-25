@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { User } from '../entity/User';
-import { UserData } from '../types';
+import { UpdateUserData, UserData } from '../types';
 import createHttpError from 'http-errors';
 
 export class UserService {
@@ -66,5 +66,46 @@ export class UserService {
             throw err;
         }
         return user;
+    }
+
+    async getAll() {
+        return await this.userRepository.find();
+    }
+
+    async getUserById(id: number) {
+        const user = await this.userRepository.findOne({
+            where: { id },
+        });
+        if (!user) {
+            const err = createHttpError(404, 'User not found');
+            throw err;
+        }
+        return user;
+    }
+
+    async update(id: number, { firstName, lastName, role }: UpdateUserData) {
+        const user = await this.userRepository.findOne({
+            where: { id },
+        });
+        if (!user) {
+            const err = createHttpError(404, 'User not found');
+            throw err;
+        }
+        return await this.userRepository.update(id, {
+            firstName,
+            lastName,
+            role,
+        });
+    }
+
+    async delete(id: number) {
+        const user = await this.userRepository.findOne({
+            where: { id },
+        });
+        if (!user) {
+            const err = createHttpError(404, 'User not found');
+            throw err;
+        }
+        return await this.userRepository.delete(id);
     }
 }

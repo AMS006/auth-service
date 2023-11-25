@@ -27,4 +27,36 @@ router.post(
         userController.create(req, res, next)
 );
 
+router.get(
+    '/',
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.getAll(req, res, next)
+);
+
+router.get(
+    '/:id',
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.getUserById(req, res, next)
+);
+
+router.patch(
+    '/:id',
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.update(req, res, next)
+);
+
+router.delete(
+    '/:id',
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    (req: Request, res: Response, next: NextFunction) =>
+        userController.delete(req, res, next)
+);
+
 export default router;
