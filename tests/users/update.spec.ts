@@ -7,9 +7,9 @@ import { User } from '../../src/entity/User';
 import { Roles } from '../../src/constants';
 
 import { Tenant } from '../../src/entity/Tenants';
-import { createTestTenant } from '../utils';
+import { createTestTenant, createTestUser } from '../utils';
 
-describe('POST /users', () => {
+describe('PATCH /users', () => {
     let connection: DataSource;
     let jwks: ReturnType<typeof createJWKSMock>;
 
@@ -33,17 +33,20 @@ describe('POST /users', () => {
     });
 
     describe('given all fileds', () => {
-        it('should return 201 status code', async () => {
+        it('should return 200 status code', async () => {
             const tenant = await createTestTenant(
                 connection.getRepository(Tenant)
             );
+
+            const user = await createTestUser(
+                connection.getRepository(User),
+                tenant.id
+            );
+
             //Arrange
             const userData = {
-                email: 'test@gmail.com',
-                password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
-                tenantId: tenant.id,
                 role: Roles.MANAGER,
             };
             //Act
@@ -54,61 +57,27 @@ describe('POST /users', () => {
             });
 
             const response = await request(app)
-                .post('/users')
+                .patch(`/users/${user.id}`)
                 .set('Cookie', [`accessToken=${adminToken}`])
                 .send(userData);
 
             //Assert
-            expect(response.statusCode).toBe(201);
+            expect(response.statusCode).toBe(200);
         });
 
-        it('should persist user in database', async () => {
+        it('should return 403 if non-admin user tries to update user', async () => {
             const tenant = await createTestTenant(
                 connection.getRepository(Tenant)
             );
 
-            //Arrange
-            const userData = {
-                email: 'test@gmail.com',
-                password: '12345678',
-                firstName: 'Anas',
-                lastName: 'Sain',
-                tenantId: tenant.id,
-                role: Roles.MANAGER,
-            };
-            //Act
-
-            const adminToken = jwks.token({
-                sub: '1',
-                role: Roles.ADMIN,
-            });
-
-            await request(app)
-                .post('/users')
-                .set('Cookie', [`accessToken=${adminToken}`])
-                .send(userData);
-
-            //Assert
-            const userRepository = connection.getRepository(User);
-            const user = await userRepository.find();
-
-            expect(user).toHaveLength(1);
-            expect(user[0].role).toBe(Roles.MANAGER);
-            expect(user[0].email).toBe(userData.email);
-        });
-
-        it('should return 403 if non-admin user tries to create a user', async () => {
-            const tenant = await createTestTenant(
-                connection.getRepository(Tenant)
+            const user = await createTestUser(
+                connection.getRepository(User),
+                tenant.id
             );
-
             //Arrange
             const userData = {
-                email: 'test@gmail.com',
-                password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
-                tenantId: tenant.id,
                 role: Roles.MANAGER,
             };
             //Act
@@ -119,15 +88,11 @@ describe('POST /users', () => {
             });
 
             const response = await request(app)
-                .post('/users')
+                .patch(`/users/${user.id}`)
                 .set('Cookie', [`accessToken=${managerToken}`])
                 .send(userData);
 
             //Assert
-            const userRepository = connection.getRepository(User);
-            const user = await userRepository.find();
-
-            expect(user).toHaveLength(0);
             expect(response.statusCode).toBe(403);
         });
     });

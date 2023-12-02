@@ -80,7 +80,7 @@ export class TenantController {
                 return next(err);
             }
             this.logger.info('Tenant updated successfully', { id });
-            res.status(200).json({ id, message: 'Tenant Updated' });
+            res.status(200).json({ tenant, message: 'Tenant Updated' });
         } catch (error) {
             next(error);
         }

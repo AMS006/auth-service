@@ -1,5 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 import { Tenant } from '../../src/entity/Tenants';
+import { Roles } from '../../src/constants';
+import { User } from '../../src/entity/User';
 
 export const truncateTables = async (connection: DataSource) => {
     const entities = connection.entityMetadatas;
@@ -32,4 +34,19 @@ export const createTestTenant = async (repository: Repository<Tenant>) => {
     });
 
     return tenant;
+};
+
+export const createTestUser = async (
+    repository: Repository<User>,
+    tenantId: number
+) => {
+    const user = await repository.save({
+        email: 'test@gmail.com',
+        role: Roles.MANAGER,
+        firstName: 'Test',
+        lastName: '1',
+        tenant: { id: tenantId },
+        password: '12345678',
+    });
+    return user;
 };
