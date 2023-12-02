@@ -7,6 +7,7 @@
     "license": "ISC",
     "scripts": {
         "build":"tsc",
+        "run:build": "node ./dist/src/server.js",
         "format:check": "npx prettier . --check",
         "format:fix": "npx prettier . --write",
         "lint:check": "npx eslint .",
