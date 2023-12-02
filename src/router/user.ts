@@ -1,4 +1,9 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, {
+    NextFunction,
+    Request,
+    RequestHandler,
+    Response,
+} from 'express';
 import logger from '../config/logger';
 import { AppDataSource } from '../config/data-source';
 import { User } from '../entity/User';
@@ -20,43 +25,43 @@ const userController = new UserController(userService, logger);
 
 router.post(
     '/',
-    authenticate,
+    authenticate as RequestHandler,
     canAccess([Roles.ADMIN]),
     registerValidator,
     (req: Request, res: Response, next: NextFunction) =>
-        userController.create(req, res, next)
+        userController.create(req, res, next) as unknown as RequestHandler
 );
 
 router.get(
     '/',
-    authenticate,
+    authenticate as RequestHandler,
     canAccess([Roles.ADMIN]),
     (req: Request, res: Response, next: NextFunction) =>
-        userController.getAll(req, res, next)
+        userController.getAll(req, res, next) as unknown as RequestHandler
 );
 
 router.get(
     '/:id',
-    authenticate,
+    authenticate as RequestHandler,
     canAccess([Roles.ADMIN]),
     (req: Request, res: Response, next: NextFunction) =>
-        userController.getUserById(req, res, next)
+        userController.getUserById(req, res, next) as unknown as RequestHandler
 );
 
 router.patch(
     '/:id',
-    authenticate,
+    authenticate as RequestHandler,
     canAccess([Roles.ADMIN]),
     (req: Request, res: Response, next: NextFunction) =>
-        userController.update(req, res, next)
+        userController.update(req, res, next) as unknown as RequestHandler
 );
 
 router.delete(
     '/:id',
-    authenticate,
+    authenticate as RequestHandler,
     canAccess([Roles.ADMIN]),
     (req: Request, res: Response, next: NextFunction) =>
-        userController.delete(req, res, next)
+        userController.delete(req, res, next) as unknown as RequestHandler
 );
 
 export default router;
