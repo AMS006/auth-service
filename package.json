@@ -10,6 +10,7 @@
         "run:build": "node ./dist/src/server.js",
         "format:check": "npx prettier . --check",
         "format:fix": "npx prettier . --write",
+        "lint": "eslint .",
         "lint:check": "npx eslint .",
         "lint:fix": "npx eslint . --fix",
         "dev": "cross-env NODE_ENV=dev nodemon ./src/server.ts ",
