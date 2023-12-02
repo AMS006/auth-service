@@ -6,7 +6,7 @@ import { UserService } from '../services/UserService';
 import authenticate from '../middlewares/authenticate';
 
 import canAccess from '../middlewares/canAccess';
-import { Roles } from '../constants/intex';
+import { Roles } from '../constants';
 import { UserController } from '../controller/UserController';
 import registerValidator from '../validators/register-validator';
 
@@ -21,8 +21,8 @@ const userController = new UserController(userService, logger);
 router.post(
     '/',
     authenticate,
-    registerValidator,
     canAccess([Roles.ADMIN]),
+    registerValidator,
     (req: Request, res: Response, next: NextFunction) =>
         userController.create(req, res, next)
 );

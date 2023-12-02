@@ -1,12 +1,12 @@
 import request from 'supertest';
 import { DataSource } from 'typeorm';
-import app from '../../app';
+import app from '../../src/app';
 import { isJWT } from '../utils';
-import { User } from '../../entity/User';
-import { Roles } from '../../constants/intex';
-import { AppDataSource } from '../../config/data-source';
-import { RefreshToken } from '../../entity/RefreshToken';
-import { Headers } from '../../types';
+import { User } from '../../src/entity/User';
+import { Roles } from '../../src/constants';
+import { AppDataSource } from '../../src/config/data-source';
+import { RefreshToken } from '../../src/entity/RefreshToken';
+import { Headers } from '../../src/types';
 
 describe('POST auth/register', () => {
     let connection: DataSource;
@@ -134,7 +134,7 @@ describe('POST auth/register', () => {
 
             expect(users[0].password).not.toBe(userData.password);
             expect(users[0].password).toHaveLength(60);
-            expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
+            expect(users[0].password).toMatch(/^\$2[a|b]\$\d+\$/);
         });
 
         it('should not add user if email already exists', async () => {
@@ -171,8 +171,8 @@ describe('POST auth/register', () => {
 
             // Assert
             const cookies = (response.headers as Headers)['set-cookie'] || [];
-            let accessToken = null;
-            let refreshToken = null;
+            let accessToken: string | null = null;
+            let refreshToken: string | null = null;
             cookies.forEach((cookie) => {
                 if (cookie.startsWith('accessToken=')) {
                     accessToken = cookie.split(';')[0].split('=')[1];

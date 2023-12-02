@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { UserService } from '../services/UserService';
 import { Logger } from 'winston';
-import { RegisterUserRequest, UpdateUserRequest } from '../types';
-import { Roles } from '../constants/intex';
+import { CreateUserRequest, UpdateUserRequest } from '../types';
 
 export class UserController {
     constructor(
@@ -10,15 +9,17 @@ export class UserController {
         private logger: Logger
     ) {}
 
-    async create(req: RegisterUserRequest, res: Response, next: NextFunction) {
-        const { firstName, lastName, email, password } = req.body;
+    async create(req: CreateUserRequest, res: Response, next: NextFunction) {
+        const { firstName, lastName, email, password, role, tenantId } =
+            req.body;
         try {
             await this.userService.create({
                 firstName,
                 lastName,
                 email,
                 password,
-                role: Roles.MANAGER,
+                role,
+                tenantId,
             });
             res.status(201).json({ message: 'User created successfully' });
         } catch (error) {

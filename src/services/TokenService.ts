@@ -2,10 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import { JwtPayload, sign } from 'jsonwebtoken';
 import { Config } from '../config';
-import { UserData } from '../types';
 import { RefreshToken } from '../entity/RefreshToken';
 import { Repository } from 'typeorm';
 import createHttpError from 'http-errors';
+import { User } from '../entity/User';
 
 export class TokenService {
     constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
@@ -38,7 +38,7 @@ export class TokenService {
         return refreshToken;
     }
 
-    async persistRefreshToken(user: UserData) {
+    async persistRefreshToken(user: User) {
         const newRefreshToken = await this.refreshTokenRepository.save({
             user,
             expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),

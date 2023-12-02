@@ -1,13 +1,13 @@
 import request from 'supertest';
 import { DataSource } from 'typeorm';
-import { AppDataSource } from '../../config/data-source';
-import app from '../../app';
+import { AppDataSource } from '../../src/config/data-source';
+import app from '../../src/app';
 import { isJWT } from '../utils';
-import { Headers } from '../../types';
-import { RefreshToken } from '../../entity/RefreshToken';
-import bcrypt from 'bcrypt';
-import { User } from '../../entity/User';
-import { Roles } from '../../constants/intex';
+import { Headers } from '../../src/types';
+import { RefreshToken } from '../../src/entity/RefreshToken';
+import bcrypt from 'bcryptjs';
+import { User } from '../../src/entity/User';
+import { Roles } from '../../src/constants';
 
 describe('POST /auth/login', () => {
     let connection: DataSource;

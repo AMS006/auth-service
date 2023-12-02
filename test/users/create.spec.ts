@@ -1,10 +1,13 @@
 import request from 'supertest';
 import { DataSource } from 'typeorm';
-import { AppDataSource } from '../../config/data-source';
-import app from '../../app';
+import { AppDataSource } from '../../src/config/data-source';
+import app from '../../src/app';
 import createJWKSMock from 'mock-jwks';
-import { User } from '../../entity/User';
-import { Roles } from '../../constants/intex';
+import { User } from '../../src/entity/User';
+import { Roles } from '../../src/constants';
+
+import { Tenant } from '../../src/entity/Tenants';
+import { createTestTenant } from '../utils';
 
 describe('POST /users', () => {
     let connection: DataSource;
@@ -31,13 +34,17 @@ describe('POST /users', () => {
 
     describe('given all fileds', () => {
         it('should return 201 status code', async () => {
+            const tenant = await createTestTenant(
+                connection.getRepository(Tenant)
+            );
             //Arrange
             const userData = {
                 email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
-                tenantId: 1,
+                tenantId: tenant.id,
+                role: Roles.MANAGER,
             };
             //Act
 
@@ -56,13 +63,18 @@ describe('POST /users', () => {
         });
 
         it('should persist user in database', async () => {
+            const tenant = await createTestTenant(
+                connection.getRepository(Tenant)
+            );
+
             //Arrange
             const userData = {
                 email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
-                tenantId: 1,
+                tenantId: tenant.id,
+                role: Roles.MANAGER,
             };
             //Act
 
@@ -86,13 +98,18 @@ describe('POST /users', () => {
         });
 
         it('should return 403 if non-admin user tries to create a tenant', async () => {
+            const tenant = await createTestTenant(
+                connection.getRepository(Tenant)
+            );
+
             //Arrange
             const userData = {
                 email: 'test@gmail.com',
                 password: '12345678',
                 firstName: 'Anas',
                 lastName: 'Sain',
-                tenantId: 1,
+                tenantId: tenant.id,
+                role: Roles.MANAGER,
             };
             //Act
 

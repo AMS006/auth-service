@@ -11,6 +11,7 @@ export default (roles: string[]) => {
             const error = createHttpError(401, 'Unauthorized');
             return next(error);
         }
+
         if (!roles.includes(user.role)) {
             const error = createHttpError(403, 'Forbidden');
             return next(error);

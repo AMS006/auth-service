@@ -1,19 +1,19 @@
 import { Request } from 'express';
 
 export interface UserData {
-    firstName?: string;
-    lastName?: string;
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
-    role?: string;
-}
-
-export interface Headers {
-    [key: string]: string[];
+    role: string;
+    tenantId?: number;
 }
 
 export interface RegisterUserRequest extends Request {
     body: UserData;
+}
+export interface Headers {
+    [key: string]: string[];
 }
 
 export interface LoginUserRequest extends Request {
@@ -41,6 +41,9 @@ export interface ITenant {
     address: string;
 }
 
+export interface CreateUserRequest extends Request {
+    body: UserData;
+}
 export interface TenantCreateRequest extends Request {
     body: ITenant;
 }

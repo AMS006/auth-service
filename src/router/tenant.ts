@@ -6,7 +6,7 @@ import { AppDataSource } from '../config/data-source';
 import { Tenant } from '../entity/Tenants';
 import authenticate from '../middlewares/authenticate';
 import canAccess from '../middlewares/canAccess';
-import { Roles } from '../constants/intex';
+import { Roles } from '../constants';
 import tenantValidator from '../validators/tenant-validator';
 import logger from '../config/logger';
 

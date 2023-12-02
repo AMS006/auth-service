@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { User } from '../entity/User';
 import { UpdateUserData, UserData } from '../types';
 import createHttpError from 'http-errors';
@@ -7,7 +7,14 @@ import createHttpError from 'http-errors';
 export class UserService {
     constructor(private userRepository: Repository<User>) {}
 
-    async create({ firstName, lastName, email, password, role }: UserData) {
+    async create({
+        firstName,
+        lastName,
+        email,
+        password,
+        role,
+        tenantId,
+    }: UserData) {
         // Check if user already exists
         const user = await this.userRepository.findOne({
             where: { email: email },
@@ -18,17 +25,19 @@ export class UserService {
             throw err;
         }
 
-        // Hash the password
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
         try {
+            // Hash the password
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+
             // Store user in database
             return await this.userRepository.save({
                 firstName,
                 lastName,
                 email,
                 password: hashedPassword,
-                role: role,
+                role,
+                tenant: tenantId ? { id: tenantId } : undefined,
             });
         } catch (error) {
             const err = createHttpError(
