@@ -21,6 +21,7 @@ export class UserController {
                 role,
                 tenantId,
             });
+            this.logger.info('User created successfully', { email });
             res.status(201).json({ message: 'User created successfully' });
         } catch (error) {
             return next(error);
