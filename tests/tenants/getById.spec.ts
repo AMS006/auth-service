@@ -7,7 +7,7 @@ import { Roles } from '../../src/constants';
 import { createTestTenant } from '../utils';
 import { Tenant } from '../../src/entity/Tenants';
 
-describe('PATCH /tenants/:id', () => {
+describe('GET /tenants/:id', () => {
     let connection: DataSource;
     let jwks: ReturnType<typeof createJWKSMock>;
 
@@ -31,16 +31,11 @@ describe('PATCH /tenants/:id', () => {
     });
 
     describe('given body fileds are valid', () => {
-        it('should return 200 status code', async () => {
+        it('should return correct tenant details', async () => {
             // Arrange
             const tenant = await createTestTenant(
                 connection.getRepository(Tenant)
             );
-
-            const tenantData = {
-                name: 'tenant1',
-                address: 'tenant address',
-            };
 
             // Act
             const adminToken = jwks.token({
@@ -49,12 +44,13 @@ describe('PATCH /tenants/:id', () => {
             });
 
             const response = await request(app)
-                .patch(`/tenants/${tenant.id}`)
+                .get(`/tenants/${tenant.id}`)
                 .set('Cookie', [`accessToken=${adminToken}`])
-                .send(tenantData);
+                .send();
 
             // Assert
             expect(response.statusCode).toBe(200);
+            expect(response.body.id).toEqual(tenant.id);
         });
 
         it('should return 401 status code if user is not authenticated', async () => {
@@ -63,15 +59,10 @@ describe('PATCH /tenants/:id', () => {
                 connection.getRepository(Tenant)
             );
 
-            const tenantData = {
-                name: 'tenant1',
-                address: 'tenant address',
-            };
-
             // Act
             const response = await request(app)
-                .patch(`/tenants/${tenant.id}`)
-                .send(tenantData);
+                .get(`/tenants/${tenant.id}`)
+                .send();
 
             // Assert
             expect(response.statusCode).toBe(401);
@@ -83,11 +74,6 @@ describe('PATCH /tenants/:id', () => {
                 connection.getRepository(Tenant)
             );
 
-            const tenantData = {
-                name: 'tenant1',
-                address: 'tenant address',
-            };
-
             // Act
             const adminToken = jwks.token({
                 sub: '1',
@@ -95,9 +81,9 @@ describe('PATCH /tenants/:id', () => {
             });
 
             const response = await request(app)
-                .patch(`/tenants/${tenant.id}`)
+                .get(`/tenants/${tenant.id}`)
                 .set('Cookie', [`accessToken=${adminToken}`])
-                .send(tenantData);
+                .send();
 
             // Assert
             expect(response.statusCode).toBe(403);

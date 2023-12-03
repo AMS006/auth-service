@@ -4,6 +4,7 @@ import { Roles } from '../../src/constants';
 import { User } from '../../src/entity/User';
 import { create } from 'domain';
 import createHttpError from 'http-errors';
+import { loggers } from 'winston';
 
 export const truncateTables = async (connection: DataSource) => {
     const entities = connection.entityMetadatas;
@@ -24,8 +25,7 @@ export const isJWT = (token: string | null): boolean => {
             Buffer.from(part, 'base64').toString('utf-8');
         });
     } catch (error) {
-        const err = createHttpError(400, 'Invalid JWT token');
-        throw err;
+        return false;
     }
     return true;
 };
