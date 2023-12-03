@@ -2,6 +2,8 @@ import { DataSource, Repository } from 'typeorm';
 import { Tenant } from '../../src/entity/Tenants';
 import { Roles } from '../../src/constants';
 import { User } from '../../src/entity/User';
+import { create } from 'domain';
+import createHttpError from 'http-errors';
 
 export const truncateTables = async (connection: DataSource) => {
     const entities = connection.entityMetadatas;
@@ -22,7 +24,8 @@ export const isJWT = (token: string | null): boolean => {
             Buffer.from(part, 'base64').toString('utf-8');
         });
     } catch (error) {
-        return false;
+        const err = createHttpError(400, 'Invalid JWT token');
+        throw err;
     }
     return true;
 };
