@@ -9,7 +9,7 @@ import { Roles } from '../../src/constants';
 import { Tenant } from '../../src/entity/Tenants';
 import { createTestTenant, createTestUser } from '../utils';
 
-describe('DELETE /users', () => {
+describe('DELETE /users/:id', () => {
     let connection: DataSource;
     let jwks: ReturnType<typeof createJWKSMock>;
 

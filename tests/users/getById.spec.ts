@@ -9,7 +9,7 @@ import { Roles } from '../../src/constants';
 import { Tenant } from '../../src/entity/Tenants';
 import { createTestTenant, createTestUser } from '../utils';
 
-describe('PATCH /users/:id', () => {
+describe('GET /users/:id', () => {
     let connection: DataSource;
     let jwks: ReturnType<typeof createJWKSMock>;
 
@@ -33,7 +33,7 @@ describe('PATCH /users/:id', () => {
     });
 
     describe('given all fileds', () => {
-        it('should return 200 status code', async () => {
+        it('should return correct user Details', async () => {
             const tenant = await createTestTenant(
                 connection.getRepository(Tenant)
             );
@@ -43,12 +43,6 @@ describe('PATCH /users/:id', () => {
                 tenant.id
             );
 
-            //Arrange
-            const userData = {
-                firstName: 'Anas',
-                lastName: 'Sain',
-                role: Roles.MANAGER,
-            };
             //Act
 
             const adminToken = jwks.token({
@@ -57,15 +51,15 @@ describe('PATCH /users/:id', () => {
             });
 
             const response = await request(app)
-                .patch(`/users/${user.id}`)
+                .get(`/users/${user.id}`)
                 .set('Cookie', [`accessToken=${adminToken}`])
-                .send(userData);
+                .send();
 
             //Assert
-            expect(response.statusCode).toBe(200);
+            expect(response.body.id).toBe(user.id);
         });
 
-        it('should return 403 if non-admin user tries to update user', async () => {
+        it('should return 403 if non-admin user tries to get user', async () => {
             const tenant = await createTestTenant(
                 connection.getRepository(Tenant)
             );
@@ -74,12 +68,7 @@ describe('PATCH /users/:id', () => {
                 connection.getRepository(User),
                 tenant.id
             );
-            //Arrange
-            const userData = {
-                firstName: 'Anas',
-                lastName: 'Sain',
-                role: Roles.MANAGER,
-            };
+
             //Act
 
             const managerToken = jwks.token({
@@ -88,9 +77,9 @@ describe('PATCH /users/:id', () => {
             });
 
             const response = await request(app)
-                .patch(`/users/${user.id}`)
+                .get(`/users/${user.id}`)
                 .set('Cookie', [`accessToken=${managerToken}`])
-                .send(userData);
+                .send();
 
             //Assert
             expect(response.statusCode).toBe(403);

@@ -7,7 +7,7 @@ import { Roles } from '../../src/constants';
 import { createTestTenant } from '../utils';
 import { Tenant } from '../../src/entity/Tenants';
 
-describe('DELETE /tenants', () => {
+describe('DELETE /tenants/:id', () => {
     let connection: DataSource;
     let jwks: ReturnType<typeof createJWKSMock>;
 
