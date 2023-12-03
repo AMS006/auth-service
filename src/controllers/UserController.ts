@@ -45,7 +45,7 @@ export class UserController {
             return next(new Error('Invalid User Id'));
         }
         try {
-            const user = await this.userService.getUserById(Number(id));
+            const user = await this.userService.findById(Number(id));
             if (!user) {
                 return next(new Error('User not found'));
             }
