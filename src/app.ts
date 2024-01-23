@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import logger from './config/logger';
 import { HttpError } from 'http-errors';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import 'reflect-metadata';
 
 import authRouter from './router/auth';
@@ -9,6 +10,12 @@ import tenantRouter from './router/tenant';
 import userRouter from './router/user';
 
 const app = express();
+app.use(
+    cors({
+        origin: 'http://localhost:5173',
+        credentials: true,
+    })
+);
 
 app.use(express.json());
 app.use(cookieParser());
