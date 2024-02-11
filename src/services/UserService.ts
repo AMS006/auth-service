@@ -59,6 +59,9 @@ export class UserService {
                 'password',
                 'role',
             ],
+            relations: {
+                tenant: true,
+            },
         });
     }
 
@@ -69,6 +72,9 @@ export class UserService {
     async findById(id: number) {
         const user = await this.userRepository.findOne({
             where: { id },
+            relations: {
+                tenant: true,
+            },
         });
         if (!user) {
             const err = createHttpError(404, 'User not found');
