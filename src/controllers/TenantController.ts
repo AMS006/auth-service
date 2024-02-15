@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { TenantCreateRequest } from '../types';
+import { TenantCreateRequest, TenantQueryParams } from '../types';
 import { TenantService } from '../services/TenantService';
-import { validationResult } from 'express-validator';
+import { matchedData, validationResult } from 'express-validator';
 import createHttpError from 'http-errors';
 import { Logger } from 'winston';
 
@@ -29,9 +29,17 @@ export class TenantController {
     }
 
     async getAll(req: Request, res: Response, next: NextFunction) {
+        const validateQuery = matchedData(req, { onlyValidData: true });
         try {
-            const tenants = await this.tenantService.getAll();
-            res.status(200).json(tenants);
+            const [tenants, count] = await this.tenantService.getAll(
+                validateQuery as TenantQueryParams
+            );
+            res.status(200).json({
+                tenants,
+                count,
+                page: validateQuery.page as number,
+                limit: validateQuery.limit as number,
+            });
         } catch (error) {
             next(error);
         }

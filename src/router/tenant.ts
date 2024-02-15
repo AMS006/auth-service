@@ -14,6 +14,7 @@ import canAccess from '../middlewares/canAccess';
 import { Roles } from '../constants';
 import tenantValidator from '../validators/tenant-validator';
 import logger from '../config/logger';
+import getTenantsValidator from '../validators/get-tenants-validator';
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.post(
 
 router.get(
     '/',
+    getTenantsValidator,
     (req: Request, res: Response, next: NextFunction) =>
         tenantController.getAll(req, res, next) as unknown as RequestHandler
 );

@@ -52,8 +52,22 @@ export interface UpdateUserData {
     firstName: string;
     lastName: string;
     role: string;
+    tenantId?: number;
 }
 
 export interface UpdateUserRequest extends Request {
     body: UpdateUserData;
+}
+
+export interface UserQueryParams {
+    page: number;
+    limit: number;
+    search?: string;
+    role?: string;
+}
+
+export interface TenantQueryParams {
+    page: number;
+    limit: number;
+    search?: string;
 }
