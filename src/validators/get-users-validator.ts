@@ -3,31 +3,31 @@ import { checkSchema } from 'express-validator';
 export default checkSchema({
     search: {
         customSanitizer: {
-            options: (value: unknown) => {
-                return value ? value : '';
+            options: (searchValue: unknown) => {
+                return searchValue ? searchValue : '';
             },
         },
     },
     role: {
         customSanitizer: {
-            options: (value: unknown) => {
-                return value ? value : '';
+            options: (roleValue: unknown) => {
+                return roleValue ? roleValue : '';
             },
         },
     },
     page: {
         customSanitizer: {
-            options: (value) => {
-                const parsedValue = Number(value);
-                return Number.isNaN(parsedValue) ? 1 : parsedValue;
+            options: (pageValue) => {
+                const pageParsedValue = Number(pageValue);
+                return Number.isNaN(pageParsedValue) ? 1 : pageParsedValue;
             },
         },
     },
     limit: {
         customSanitizer: {
-            options: (value) => {
-                const parsedValue = Number(value);
-                return Number.isNaN(parsedValue) ? 6 : parsedValue;
+            options: (limitValue) => {
+                const limitParsetValue = Number(limitValue);
+                return Number.isNaN(limitParsetValue) ? 6 : limitParsetValue;
             },
         },
     },
