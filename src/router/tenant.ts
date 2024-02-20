@@ -33,6 +33,8 @@ router.post(
 
 router.get(
     '/',
+    authenticate as RequestHandler,
+    canAccess([Roles.ADMIN]),
     getTenantsValidator,
     (req: Request, res: Response, next: NextFunction) =>
         tenantController.getAll(req, res, next) as unknown as RequestHandler
