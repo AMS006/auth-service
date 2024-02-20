@@ -1,7 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { Logger } from 'winston';
-import { CreateUserRequest, UpdateUserRequest } from '../types';
+import {
+    CreateUserRequest,
+    UpdateUserRequest,
+    UserQueryParams,
+} from '../types';
 import { UserService } from '../services/UserService';
+import { matchedData } from 'express-validator';
 
 export class UserController {
     constructor(
@@ -30,9 +35,18 @@ export class UserController {
     }
 
     async getAll(req: Request, res: Response, next: NextFunction) {
+        const validateQuery = matchedData(req, { onlyValidData: true });
         try {
-            const users = await this.userService.getAll();
-            res.status(200).json(users);
+            const [users, count] = await this.userService.getAll(
+                validateQuery as UserQueryParams
+            );
+
+            res.status(200).json({
+                users,
+                count,
+                page: validateQuery.page as number,
+                limit: validateQuery.limit as number,
+            });
         } catch (error) {
             next(error);
         }
@@ -61,12 +75,14 @@ export class UserController {
         if (isNaN(_id)) {
             return next(new Error('Invalid User Id'));
         }
-        const { firstName, lastName, role } = req.body;
+        const { firstName, lastName, role, tenantId } = req.body;
+        // console.log(req.body, "In User Controller")
         try {
             await this.userService.update(Number(id), {
                 firstName,
                 lastName,
                 role,
+                tenantId,
             });
             res.status(200).json({ message: 'User updated successfully' });
         } catch (error) {
